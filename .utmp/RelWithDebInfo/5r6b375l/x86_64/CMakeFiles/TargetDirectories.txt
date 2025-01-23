@@ -1,0 +1,5 @@
+C:/Synapse India/2024/Android/Monopoly/Monopoly/.utmp/RelWithDebInfo/5r6b375l/x86_64/CMakeFiles/edit_cache.dir
+C:/Synapse India/2024/Android/Monopoly/Monopoly/.utmp/RelWithDebInfo/5r6b375l/x86_64/CMakeFiles/rebuild_cache.dir
+C:/Synapse India/2024/Android/Monopoly/Monopoly/.utmp/RelWithDebInfo/5r6b375l/x86_64/FramePacing/CMakeFiles/swappywrapper.dir
+C:/Synapse India/2024/Android/Monopoly/Monopoly/.utmp/RelWithDebInfo/5r6b375l/x86_64/FramePacing/CMakeFiles/edit_cache.dir
+C:/Synapse India/2024/Android/Monopoly/Monopoly/.utmp/RelWithDebInfo/5r6b375l/x86_64/FramePacing/CMakeFiles/rebuild_cache.dir

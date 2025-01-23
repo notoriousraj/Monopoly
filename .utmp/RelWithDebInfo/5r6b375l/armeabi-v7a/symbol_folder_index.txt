@@ -1,0 +1,1 @@
+C:\Synapse India\2024\Android\Monopoly\Monopoly\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\build\intermediates\cxx\RelWithDebInfo\5r6b375l\obj\armeabi-v7a

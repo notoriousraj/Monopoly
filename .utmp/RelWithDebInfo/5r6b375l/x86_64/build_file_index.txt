@@ -1,0 +1,2 @@
+C:\Synapse India\2024\Android\Monopoly\Monopoly\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\CMakeLists.txt
+C:\Synapse India\2024\Android\Monopoly\Monopoly\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\FramePacing\CMakeLists.txt
