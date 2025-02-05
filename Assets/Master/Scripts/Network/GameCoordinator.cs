@@ -27,7 +27,12 @@ internal sealed class GameCoordinator : MonoBehaviour
         MonopolyGame
     }
 
+#if UNITY_WEBGL
+    private const string CONNECTION_TYPE = "wss";
+#else
     private const string CONNECTION_TYPE = "dtls";
+#endif
+
 
     public static GameCoordinator Instance { get; private set; }
 
@@ -137,24 +142,15 @@ internal sealed class GameCoordinator : MonoBehaviour
 
     public async Task LoadSceneAsync(MonopolyScene scene)
     {
+        Debug.Log($"Loading scene: {scene}");
         await SceneManager.LoadSceneAsync(scene.ToString(), LoadSceneMode.Single);
     }
 
     public void UpdateInitializedObjects(Type gameObject)
     {
-        if (this.objectsToLoad == null)
+        if (!this.objectsToLoad.Contains(gameObject) || this.initializedObjects.Contains(gameObject))
         {
-            throw new System.InvalidOperationException($"You have to call {nameof(this.SetupInitializedObjects)} at first.");
-        }
-
-        if (!this.objectsToLoad.Contains(gameObject))
-        {
-            throw new System.ArgumentException($"{nameof(gameObject)} is not in {nameof(this.SetupInitializedObjects)}.");
-        }
-
-        if (this.initializedObjects.Contains(gameObject))
-        {
-            throw new System.ArgumentException($"{nameof(gameObject)} has already been initialized.");
+            throw new System.ArgumentException($"{nameof(gameObject)} is either not in the load list or already initialized.");
         }
 
         this.initializedObjects.AddLast(gameObject);
@@ -214,55 +210,57 @@ internal sealed class GameCoordinator : MonoBehaviour
     {
         if (this.LocalPlayer == null)
         {
-            throw new System.InvalidOperationException($"{nameof(this.LocalPlayer)} is null.");
+            Debug.LogError("LocalPlayer is null. Cannot host a lobby.");
+            return;
         }
 
         try
         {
             Allocation hostAllocation = await RelayService.Instance.CreateAllocationAsync(LobbyManager.MAX_PLAYERS);
 
-            RelayServerData relayServerData = new RelayServerData(hostAllocation, GameCoordinator.CONNECTION_TYPE);
+            RelayServerData relayServerData = new RelayServerData(hostAllocation, CONNECTION_TYPE);
 
             NetworkManager.Singleton?.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
             string relayCode = await RelayService.Instance.GetJoinCodeAsync(hostAllocation.AllocationId);
+            Debug.Log($"Relay Join Code: {relayCode}");
 
             await LobbyManager.Instance?.HostLobbyAsync(relayCode);
         }
-        catch (RelayServiceException relayServiceException)
+        catch (Exception ex)
         {
-            this.OnEstablishingConnectionRelayFailed?.Invoke(relayServiceException);
-        }
-        catch (LobbyServiceException lobbyServiceException)
-        {
-            this.OnEstablishingConnectionLobbyFailed?.Invoke(lobbyServiceException);
+            Debug.LogError($"Failed to host lobby: {ex.Message}");
+            this.OnEstablishingConnectionRelayFailed?.Invoke(ex as RelayServiceException);
         }
     }
 
     public async Task ConnectLobbyAsync(string joinCode)
     {
-        if (this.LocalPlayer == null)
+        if (string.IsNullOrEmpty(joinCode))
         {
-            throw new System.InvalidOperationException($"{nameof(this.LocalPlayer)} is null.");
+            Debug.LogError("JoinCode is invalid or empty.");
+            return;
         }
 
         try
         {
+            Debug.Log($"Connecting to Relay with JoinCode: {joinCode}");
+
             JoinAllocation clientAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
-            RelayServerData relayServerData = new RelayServerData(clientAllocation, GameCoordinator.CONNECTION_TYPE);
+            RelayServerData relayServerData = new RelayServerData(clientAllocation, CONNECTION_TYPE);
 
             NetworkManager.Singleton?.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
+            Debug.Log("Connecting to Lobby...");
             await LobbyManager.Instance?.ConnectLobbyAsync(joinCode);
+
+            Debug.Log("Successfully connected to the Lobby.");
         }
-        catch (RelayServiceException relayServiceException)
+        catch (Exception ex)
         {
-            this.OnEstablishingConnectionRelayFailed?.Invoke(relayServiceException);
-        }
-        catch (LobbyServiceException lobbyServiceException)
-        {
-            this.OnEstablishingConnectionLobbyFailed?.Invoke(lobbyServiceException);
+            Debug.LogError($"Failed to connect to lobby: {ex.Message}");
+            this.OnEstablishingConnectionLobbyFailed?.Invoke(ex as LobbyServiceException);
         }
     }
 

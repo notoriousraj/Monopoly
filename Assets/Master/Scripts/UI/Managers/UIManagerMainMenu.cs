@@ -259,7 +259,7 @@ internal sealed class UIManagerMainMenu : MonoBehaviour
         {
             UIManagerGlobal.Instance.ShowMessageBox(PanelMessageBoxUI.Type.OK, this.messageEmptyJoinCode, PanelMessageBoxUI.Icon.Warning);
         }
-        else if (this.textBoxJoinCode.text.Length != UIManagerMainMenu.JOIN_CODE_LENGTH)
+        else if (this.textBoxJoinCode.text.Length != JOIN_CODE_LENGTH)
         {
             UIManagerGlobal.Instance.ShowMessageBox(PanelMessageBoxUI.Type.OK, this.messageInvalidLengthJoinCode, PanelMessageBoxUI.Icon.Error);
         }
